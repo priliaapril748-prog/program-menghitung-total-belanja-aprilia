@@ -1,0 +1,321 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Program Kasir Aprilia</title>
+
+    <!--
+    =========================================
+    PROGRAM MENGHITUNG TOTAL BELANJA
+    Nama Pembuat : Aprilia Ramadhani
+    Bahasa      : HTML, CSS, JavaScript
+    =========================================
+    -->
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #e8f0fe;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 550px;
+            margin: 30px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px #b8c5d9;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2457a7;
+        }
+
+        .deskripsi {
+            text-align: center;
+            color: #666;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 7px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 11px 15px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            color: white;
+            background: #2457a7;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .tambah {
+            width: 100%;
+            background: #2457a7;
+        }
+
+        .hapus {
+            background: #dc3545;
+            margin-top: 5px;
+        }
+
+        .reset {
+            background: #777;
+            width: 100%;
+        }
+
+        .daftar {
+            margin-top: 25px;
+        }
+
+        .barang {
+            background: #f0f5ff;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+
+        .total {
+            background: #e8f0fe;
+            padding: 20px;
+            margin-top: 25px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .total h2 {
+            color: #2457a7;
+            font-size: 26px;
+        }
+
+        .pembuat {
+            text-align: center;
+            margin-top: 25px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>PROGRAM KASIR</h1>
+
+    <p class="deskripsi">
+        Program Menghitung Total Belanja
+    </p>
+
+    <hr>
+
+    <label>Nama Barang</label>
+    <input
+        type="text"
+        id="nama"
+        placeholder="Masukkan nama barang"
+    >
+
+    <label>Harga Barang</label>
+    <input
+        type="number"
+        id="harga"
+        placeholder="Masukkan harga barang"
+        min="0"
+    >
+
+    <label>Jumlah Barang</label>
+    <input
+        type="number"
+        id="jumlah"
+        placeholder="Masukkan jumlah barang"
+        min="1"
+    >
+
+    <button class="tambah" onclick="tambahBarang()">
+        + Tambahkan Barang
+    </button>
+
+    <div class="daftar">
+
+        <h3>Daftar Belanja</h3>
+
+        <div id="daftarBarang">
+            Belum ada barang.
+        </div>
+
+    </div>
+
+    <div class="total">
+
+        <p>Total Keseluruhan Belanja:</p>
+
+        <h2 id="total">Rp0</h2>
+
+    </div>
+
+    <button class="reset" onclick="resetBelanja()">
+        Reset Semua Belanja
+    </button>
+
+    <div class="pembuat">
+        <hr>
+        <p>Nama Pembuat:</p>
+        <b>Aprilia Ramadhani</b>
+    </div>
+
+</div>
+
+<script>
+
+    let daftarBelanja = [];
+
+    // Fungsi Menambahkan Barang
+
+    function tambahBarang() {
+
+        let nama = document.getElementById("nama").value.trim();
+
+        let harga = Number(document.getElementById("harga").value);
+
+        let jumlah = Number(document.getElementById("jumlah").value);
+
+        if (
+            nama === "" ||
+            document.getElementById("harga").value === "" ||
+            document.getElementById("jumlah").value === "" ||
+            harga < 0 ||
+            jumlah < 1 ||
+            !Number.isInteger(jumlah)
+        ) {
+            alert("Lengkapi data barang dengan benar!");
+            return;
+        }
+
+        let subtotal = harga * jumlah;
+
+        daftarBelanja.push({
+            nama: nama,
+            harga: harga,
+            jumlah: jumlah,
+            subtotal: subtotal
+        });
+
+        tampilkanBarang();
+
+        document.getElementById("nama").value = "";
+        document.getElementById("harga").value = "";
+        document.getElementById("jumlah").value = "";
+
+    }
+
+    // Fungsi Menampilkan Daftar Barang
+
+    function tampilkanBarang() {
+
+        let daftar = document.getElementById("daftarBarang");
+
+        let total = 0;
+
+        daftar.innerHTML = "";
+
+        daftarBelanja.forEach(function(barang, index) {
+
+            total += barang.subtotal;
+
+            daftar.innerHTML += `
+                <div class="barang">
+
+                    <b>${escapeHTML(barang.nama)}</b>
+
+                    <p>Harga: ${formatRupiah(barang.harga)}</p>
+
+                    <p>Jumlah: ${barang.jumlah}</p>
+
+                    <p>Subtotal: ${formatRupiah(barang.subtotal)}</p>
+
+                    <button class="hapus"
+                    onclick="hapusBarang(${index})">
+                        Hapus Barang
+                    </button>
+
+                </div>
+            `;
+
+        });
+
+        if (daftarBelanja.length === 0) {
+            daftar.innerHTML = "Belum ada barang.";
+        }
+
+        document.getElementById("total").innerHTML =
+            formatRupiah(total);
+
+    }
+
+    // Fungsi Menghapus Barang
+
+    function hapusBarang(index) {
+
+        daftarBelanja.splice(index, 1);
+
+        tampilkanBarang();
+
+    }
+
+    // Fungsi Reset Belanja
+
+    function resetBelanja() {
+
+        daftarBelanja = [];
+
+        tampilkanBarang();
+
+    }
+
+    // Format Rupiah
+
+    function formatRupiah(angka) {
+
+        return "Rp" + angka.toLocaleString("id-ID");
+
+    }
+
+    // Mengamankan teks nama barang
+
+    function escapeHTML(teks) {
+        return teks.replace(/[&<>"']/g, function(huruf) {
+            return {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            }[huruf];
+        });
+    }
+
+</script>
+
+</body>
+</html>
